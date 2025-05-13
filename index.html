@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mural Simplificado</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; background: #f5f5f5; }
+    header { background: #333; color: white; padding: 1rem; text-align: center; }
+    main { padding: 1rem; }
+    .noticia { background: white; margin-bottom: 1rem; border-radius: 8px; padding: 1rem; }
+    .noticia img { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: .5rem; }
+    .formulario { display: none; margin-bottom: 2rem; background: #fff; padding: 1rem; border-radius: 8px; }
+    label { display: block; margin-top: 0.5rem; }
+    input, textarea, select, button { width: 100%; padding: 0.5rem; margin-top: 0.2rem; border-radius: 4px; border: 1px solid #ccc; }
+    button { background: #333; color: white; cursor: pointer; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header><h1>Mural de Notícias</h1></header>
+  <main>
+    <div class="formulario" id="formulario">
+      <h3>Nova Notícia</h3>
+      <form id="formNoticias">
+        <label>Título <input type="text" id="titulo" required></label>
+        <label>Imagem (URL) <input type="text" id="imagem"></label>
+        <label>Categoria
+          <select id="categoria">
+            <option>Marketing</option>
+            <option>Audiovisuais</option>
+            <option>Videojogos</option>
+          </select>
+        </label>
+        <label>Texto completo <textarea id="descricao" rows="5" required></textarea></label>
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+    <div id="noticias"></div>
+  </main>
+  <script>
+    const isAdmin = window.location.search.includes("admin=1");
+    if (isAdmin) document.getElementById("formulario").style.display = "block";
+
+    const form = document.getElementById("formNoticias");
+    const noticiasDiv = document.getElementById("noticias");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const noticias = JSON.parse(localStorage.getItem("noticias") || "[]");
+      noticias.push({
+        id: "_" + Math.random().toString(36).slice(2, 9),
+        titulo: document.getElementById("titulo").value,
+        imagem: document.getElementById("imagem").value,
+        categoria: document.getElementById("categoria").value,
+        descricao: document.getElementById("descricao").value,
+        data: new Date().toISOString()
+      });
+      localStorage.setItem("noticias", JSON.stringify(noticias));
+      form.reset();
+      carregarNoticias();
+    });
+
+    function carregarNoticias() {
+      const noticias = JSON.parse(localStorage.getItem("noticias") || "[]");
+      noticiasDiv.innerHTML = noticias.map(n => `
+        <div class="noticia">
+          <h3>${n.titulo}</h3>
+          ${n.imagem ? `<img src="${n.imagem}" alt="Imagem">` : ''}
+          <p><small>${new Date(n.data).toLocaleDateString("pt-PT")}</small></p>
+          <p>${n.descricao}</p>
+        </div>
+      `).join("");
+    }
+
+    if (!localStorage.getItem("noticias")) {
+      localStorage.setItem("noticias", JSON.stringify([
+        {
+          id: "_demo",
+          titulo: "Notícia de exemplo",
+          imagem: "https://via.placeholder.com/600x300?text=Demo",
+          categoria: "Marketing",
+          descricao: "Esta é uma notícia de exemplo. Será substituída quando adicionares a tua.",
+          data: new Date().toISOString()
+        }
+      ]));
+    }
+
+    carregarNoticias();
+  </script>
+</body>
+</html>
