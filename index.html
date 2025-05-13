@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mural Final Admin GitHub</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f2f2f2; padding: 1rem; }
+    h1 { text-align: center; color: #003366; }
+    .box, .painel { max-width: 700px; margin: 1rem auto; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    input, textarea, select, button { width: 100%; margin-top: 0.5rem; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc; }
+    button { background: #003366; color: white; font-weight: bold; cursor: pointer; margin-top: 1rem; }
+    .noticia { margin-top: 1rem; }
+    img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 4px; margin-top: 0.5rem; }
+    .sucesso { color: green; font-weight: bold; }
+    .erro { color: red; font-weight: bold; }
+    pre { background: #eee; padding: 1rem; font-size: 0.9rem; border-radius: 8px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Mural de Notícias</h1>
+
+  <div class="box" id="loginBox">
+    <h2>Login de Administrador</h2>
+    <input type="password" id="adminPass" placeholder="Introduz a palavra-passe" />
+    <button onclick="login()">Entrar</button>
+  </div>
+
+  <div class="box" id="formulario" style="display:none;">
+    <h2>Nova Notícia</h2>
+    <form id="formNoticias">
+      <input type="text" id="titulo" placeholder="Título" required />
+      <input type="text" id="preview" placeholder="Subtítulo / Preview" required />
+      <input type="text" id="imagem" placeholder="URL da imagem" />
+      <select id="categoria">
+        <option>Marketing</option>
+        <option>Audiovisuais</option>
+        <option>Videojogos</option>
+      </select>
+      <textarea id="descricao" placeholder="Texto completo" rows="6" required></textarea>
+      <input type="hidden" id="editId">
+      <button type="submit">Guardar Notícia</button>
+    </form>
+  </div>
+
+  <div id="noticias"></div>
+
+  <div class="painel" id="githubPanel" style="display:none;">
+    <h2>Guardar no GitHub</h2>
+    <input id="usuario" placeholder="Utilizador GitHub" />
+    <input id="repositorio" placeholder="Repositório" />
+    <input id="ficheiro" value="noticias.json" />
+    <input id="token" type="password" placeholder="Token pessoal" />
+    <button onclick="guardarNoGitHub()">Guardar no GitHub</button>
+    <p id="mensagem" class=""></p>
+    <pre id="jsonPreview"></pre>
+  </div>
+
+<script>
+let noticias = [];
+
+function login() {
+  const pass = document.getElementById("adminPass").value;
+  if (pass === "admin123") {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("formulario").style.display = "block";
+    document.getElementById("githubPanel").style.display = "block";
+  } else {
+    alert("Palavra-passe incorreta.");
+  }
+}
+
+async function carregarNoticias() {
+  try {
+    const resp = await fetch('noticias.json');
+    noticias = await resp.json();
+  } catch {
+    noticias = [];
+  }
+  renderNoticias();
+}
+
+function renderNoticias() {
+  const div = document.getElementById("noticias");
+  div.innerHTML = "";
+  noticias.slice().reverse().forEach(n => {
+    div.innerHTML += `
+      <div class="box noticia">
+        <h2>${n.titulo}</h2>
+        <h4>${n.preview || ''}</h4>
+        ${n.imagem ? `<img src="${n.imagem}" alt="Imagem">` : ''}
+        <p><small>${new Date(n.data).toLocaleDateString("pt-PT")}</small></p>
+        <p>${n.descricao}</p>
+      </div>
+    `;
+  });
+  document.getElementById("jsonPreview").textContent = JSON.stringify(noticias, null, 2);
+}
+
+document.getElementById("formNoticias").addEventListener("submit", e => {
+  e.preventDefault();
+  const id = document.getElementById("editId").value || "_" + Math.random().toString(36).substr(2, 9);
+  const noticia = {
+    id,
+    titulo: document.getElementById("titulo").value,
+    preview: document.getElementById("preview").value,
+    imagem: document.getElementById("imagem").value,
+    categoria: document.getElementById("categoria").value,
+    descricao: document.getElementById("descricao").value,
+    data: new Date().toISOString()
+  };
+  noticias = noticias.filter(n => n.id !== id);
+  noticias.push(noticia);
+  document.getElementById("formNoticias").reset();
+  document.getElementById("editId").value = "";
+  renderNoticias();
+});
+
+async function guardarNoGitHub() {
+  const msg = document.getElementById("mensagem");
+  const username = document.getElementById("usuario").value;
+  const repo = document.getElementById("repositorio").value;
+  const path = document.getElementById("ficheiro").value;
+  const token = document.getElementById("token").value;
+  const url = `https://api.github.com/repos/${username}/${repo}/contents/${path}`;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(noticias, null, 2))));
+  try {
+    const getResp = await fetch(url, { headers: { Authorization: "token " + token }});
+    const sha = (await getResp.json()).sha;
+    const save = await fetch(url, {
+      method: "PUT",
+      headers: { Authorization: "token " + token, "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Atualizar JSON", content, sha })
+    });
+    msg.className = save.ok ? "sucesso" : "erro";
+    msg.textContent = save.ok ? "✅ Guardado com sucesso!" : "❌ Erro ao guardar.";
+  } catch {
+    msg.className = "erro";
+    msg.textContent = "❌ Erro de rede/API.";
+  }
+}
+
+carregarNoticias();
+</script>
+</body>
+</html>
