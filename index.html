@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#121212">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notícias</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f5f5f5;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    header {
+      background: #111;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      position: relative;
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+    }
+    .switch {
+      position: absolute;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+    }
+    .switch input {
+      display: none;
+    }
+    .slider {
+      width: 56px;
+      height: 20px;
+      background: #ccc;
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+    }
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: white;
+      top: 2px;
+      left: 2px;
+      transition: 0.3s;
+    }
+    input:checked + .slider::before {
+      transform: translateX(20px);
+    }
+    input:checked + .slider {
+      background: #4CAF50;
+    }
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .noticia {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    body.dark .noticia {
+      background: #1e1e1e;
+    }
+    .noticia h3 {
+      margin: 1rem 1rem 0.5rem 1rem;
+      font-size: 1.2rem;
+    }
+    .noticia img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .noticia-content {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .whatsapp-share {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: none;
+      cursor: pointer;
+      z-index: 10; background: none; display: flex; align-items: center; justify-content: center;
+    }
+    .whatsapp-share img {
+      width: 100%;
+      height: auto;
+    }
+    @media (max-width: 600px) {
+      .noticia h3 { font-size: 1rem; }
+      .noticia-content p { font-size: 0.95rem; }
+      nav { flex-wrap: wrap; gap: 0.5rem; }
+      nav button { font-size: 0.9rem; padding: 0.4rem 0.8rem; }
+    }
+  
+    @media (min-width: 600px) {
+      .grid:has(.noticia:only-child) {
+        max-width: 600px;
+        margin: auto;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: center;
+      }
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .noticia h3 {
+        font-size: 1.1rem;
+      }
+      .noticia-content p {
+        font-size: 0.95rem;
+      }
+    }
+    
+@media (max-width: 600px) {
+  .hamburger {
+    display: block;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 30px;
+    height: 22px;
+    cursor: pointer;
+    z-index: 20;
+  }
+  .hamburger span {
+    background: white;
+    display: block;
+    height: 4px;
+    margin-bottom: 5px;
+    border-radius: 2px;
+  }
+  nav {
+    display: none;
+    flex-direction: column;
+    background-color: #111;
+    padding: 1rem;
+    width: 100%;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    z-index: 10;
+  }
+  nav.show {
+    display: flex;
+  }
+}
+
+
+.hamburger {
+  display: none;
+}
+@media (max-width: 600px) {
+  .hamburger {
+    display: block;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 30px;
+    height: 22px;
+    cursor: pointer;
+    z-index: 20;
+  }
+  .hamburger span {
+    background: white;
+    display: block;
+    height: 4px;
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: 0.3s;
+  }
+  .hamburger.open span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  .hamburger.open span:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+  }
+  nav {
+    display: none;
+    flex-direction: column;
+    background-color: #111;
+    padding: 1rem;
+    width: 100%;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    z-index: 10;
+  }
+  nav.show {
+    display: flex;
+  }
+}
+
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: center;
+      }
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .noticia {
+        max-width: 95%;
+        margin: auto;
+      }
+      .grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .noticia {
+        width: 100%;
+        max-width: 95%;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: center;
+      }
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .grid {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+      }
+      .noticia {
+        width: 95% !important;
+        margin: 1rem auto;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: center;
+      }
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .grid {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+      }
+      .noticia {
+        width: 100% !important;
+        max-width: 95%;
+        margin: 1rem auto;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+      .noticia img {
+        width: 100%;
+        height: auto;
+      }
+      .noticia-content {
+        padding: 0.8rem;
+      }
+    }
+    
+@media (max-width: 600px) {
+  .grid {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .noticia {
+    width: 100% !important;
+    max-width: 95%;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .noticia img {
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+  }
+  .noticia-content {
+    padding: 0.8rem;
+  }
+  header, nav {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .noticia {
+    width: 100% !important;
+    max-width: 95%;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .noticia img {
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+  }
+  .noticia-content {
+    padding: 0.8rem;
+  }
+  header, nav {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+</style>
+</head>
+<body>
+  <header>
+
+<div class="hamburger" onclick="toggleMenu()">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+    <nav>
+      <button onclick="filtrarCategoria('Todas')">Todas</button>
+      <button onclick="filtrarCategoria('Marketing')">Marketing</button>
+      <button onclick="filtrarCategoria('Audiovisuais')">Audiovisuais</button>
+      <button onclick="filtrarCategoria('Videojogos')">Videojogos</button>
+    </nav>
+    <label class="switch">
+      <input type="checkbox" id="darkToggle">
+      <span class="slider"></span>
+    </label>
+  </header>
+
+  <main>
+
+
+
+
+    <div class="grid" id="noticias"></div>
+    
+
+
+
+<form id="formulario" style="display:none;" style="display:none; flex-direction: column; gap: 1rem; margin: 2rem auto; max-width: 600px;">
+      <input type="text" id="titulo" placeholder="Título" required />
+      <textarea id="descricao" placeholder="Texto completo da notícia" required style="min-height: 180px;"></textarea>
+      <input type="text" id="imagem" placeholder="fotos/nome.jpg" />
+      <select id="categoria">
+        <option value="Marketing">Marketing</option>
+        <option value="Audiovisuais">Audiovisuais</option>
+        <option value="Videojogos">Videojogos</option>
+      </select>
+      <button type="submit">Guardar Notícia</button>
+    </form>
+</main>
+
+  <script>
+    const noticiasDiv = document.getElementById('noticias');
+    const queryParams = new URLSearchParams(window.location.search);
+    const isAdmin = queryParams.get('admin') === '1';
+    let categoriaAtual = 'Todas';
+
+    const toggle = document.getElementById('darkToggle');
+    toggle.addEventListener('change', () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('modo', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+    if (localStorage.getItem('modo') === 'dark') {
+      document.body.classList.add('dark');
+      toggle.checked = true;
+    }
+
+    function gerarId() {
+      return '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function carregarNoticias() {
+      const dados = JSON.parse(localStorage.getItem('noticias')) || [];
+      
+    const termo = document.getElementById("pesquisa")?.value?.toLowerCase() || '';
+    const filtradas = dados.filter(n => 
+      (categoriaAtual === 'Todas' || n.categoria === categoriaAtual) &&
+      (n.titulo.toLowerCase().includes(termo) || n.descricao.toLowerCase().includes(termo))
+    );
+    
+      noticiasDiv.innerHTML = '';
+      filtradas.slice(-4).reverse().forEach(n => {
+        const card = document.createElement('div');
+        card.className = 'noticia';
+        const preview = n.descricao.substring(0, 150) + (n.descricao.length > 150 ? '...' : '');
+        card.innerHTML = `
+          <div class="whatsapp-share" onclick="partilharWhatsapp('${n.titulo}', '${n.id}')">
+            <img src="whatsapp-icon.png" alt="WhatsApp">
+          </div>
+          <h3>${n.titulo}</h3>
+          <a href="noticia.html?id=${n.id}">
+            <img src="${n.imagem}" alt="">
+          </a>
+          <div class="noticia-content">
+            <p><small>${new Date(n.data).toLocaleDateString('pt-PT')}</small><br>${preview}</p>
+          </div>
+        `;
+        noticiasDiv.appendChild(card);
+      });
+    }
+
+    function partilharWhatsapp(titulo, id) {
+      const link = `${window.location.origin}${window.location.pathname.replace("index.html", "")}noticia.html?id=${id}`;
+      const msg = encodeURIComponent(`👉 ${titulo} - ${link}`);
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+
+    function filtrarCategoria(cat) {
+      categoriaAtual = cat;
+      const isAdminMode = new URLSearchParams(window.location.search).get('admin') === '1';
+if (isAdminMode) {
+  if (isAdminMode && document.getElementById('formulario')) document.getElementById('formulario').style.display = 'flex';
+  document.getElementById('extras').style.display = 'block';
+}
+
+function toggleMenu() {
+  document.querySelector("nav").classList.toggle("show");
+}
+
+
+
+function guardarToggle(nome) {
+  
+        const input = document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1));
+        if (!input) return;
+        const estado = input.checked;
+        
+  localStorage.setItem('extra_' + nome, estado ? '1' : '0');
+  location.reload(); // aplicar sem complicações
+}
+
+function aplicarToggles() {
+  const extras = ['animacoes', 'googlefont', 'visualizacoes', 'favoritos'];
+  extras.forEach(nome => {
+    const estado = localStorage.getItem('extra_' + nome);
+    if (estado === '1') {
+      document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1)).checked = true;
+    }
+  });
+
+  if (localStorage.getItem('extra_googlefont') === '1') {
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    document.body.style.fontFamily = "'Poppins', sans-serif";
+  }
+
+  if (localStorage.getItem('extra_animacoes') === '1') {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+      @keyframes fadeIn { to { opacity: 1; } }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+aplicarToggles();
+
+function mostrarRanking() {
+  if (!isAdminMode) return;
+  document.getElementById("ranking").style.display = "block";
+
+  const dados = JSON.parse(localStorage.getItem("noticias")) || [];
+  const views = dados.map(n => {
+    const v = parseInt(localStorage.getItem('view_' + n.id) || '0');
+    return { ...n, visualizacoes: v };
+  }).sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
+
+  const favs = JSON.parse(localStorage.getItem("favoritos") || []);
+  const favoritas = dados.filter(n => favs.includes(n.id));
+
+  const listaV = document.querySelector("#maisLidas ul");
+  const listaF = document.querySelector("#maisFavoritas ul");
+  listaV.innerHTML = "";
+  listaF.innerHTML = "";
+
+  views.forEach(n => listaV.innerHTML += `<li>${n.titulo} (${n.visualizacoes} views)</li>`);
+  favoritas.forEach(n => listaF.innerHTML += `<li>${n.titulo}</li>`);
+}
+
+aplicarToggles();
+
+// Ativar todos os extras automaticamente
+(function ativarExtras() {
+  // Google Font
+  const link = document.createElement('link');
+  link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
+  document.body.style.fontFamily = "'Poppins', sans-serif";
+
+  // Animações suaves
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+  `;
+  document.head.appendChild(style);
+})();
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+
+const form = document.getElementById('formulario');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const titulo = document.getElementById('titulo').value;
+  const descricao = document.getElementById('descricao').value;
+  const imagem = document.getElementById('imagem').value;
+  const categoria = document.getElementById('categoria').value;
+  const id = form.getAttribute('data-edit-id') || '_' + Math.random().toString(36).substr(2, 9);
+
+  let noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  // Filtrar demo se existirem outras
+  if (noticias.length > 1) {
+    noticias = noticias.filter(n => n.id !== '_demo');
+  }
+
+  noticias = noticias.filter(n => n.id !== id);
+  noticias.push({ id, titulo, descricao, imagem, categoria, data: new Date().toISOString() });
+
+  localStorage.setItem('noticias', JSON.stringify(noticias));
+  form.reset();
+  form.removeAttribute('data-edit-id');
+  alert("✅ Notícia guardada com sucesso!");
+  
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+});
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+mostrarRanking();
+    }
+
+    const isAdminMode = new URLSearchParams(window.location.search).get('admin') === '1';
+if (isAdminMode) {
+  if (isAdminMode && document.getElementById('formulario')) document.getElementById('formulario').style.display = 'flex';
+  document.getElementById('extras').style.display = 'block';
+}
+
+function toggleMenu() {
+  document.querySelector("nav").classList.toggle("show");
+}
+
+
+
+function guardarToggle(nome) {
+  
+        const input = document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1));
+        if (!input) return;
+        const estado = input.checked;
+        
+  localStorage.setItem('extra_' + nome, estado ? '1' : '0');
+  location.reload(); // aplicar sem complicações
+}
+
+function aplicarToggles() {
+  const extras = ['animacoes', 'googlefont', 'visualizacoes', 'favoritos'];
+  extras.forEach(nome => {
+    const estado = localStorage.getItem('extra_' + nome);
+    if (estado === '1') {
+      document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1)).checked = true;
+    }
+  });
+
+  if (localStorage.getItem('extra_googlefont') === '1') {
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    document.body.style.fontFamily = "'Poppins', sans-serif";
+  }
+
+  if (localStorage.getItem('extra_animacoes') === '1') {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+      @keyframes fadeIn { to { opacity: 1; } }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+aplicarToggles();
+
+function mostrarRanking() {
+  if (!isAdminMode) return;
+  document.getElementById("ranking").style.display = "block";
+
+  const dados = JSON.parse(localStorage.getItem("noticias")) || [];
+  const views = dados.map(n => {
+    const v = parseInt(localStorage.getItem('view_' + n.id) || '0');
+    return { ...n, visualizacoes: v };
+  }).sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
+
+  const favs = JSON.parse(localStorage.getItem("favoritos") || []);
+  const favoritas = dados.filter(n => favs.includes(n.id));
+
+  const listaV = document.querySelector("#maisLidas ul");
+  const listaF = document.querySelector("#maisFavoritas ul");
+  listaV.innerHTML = "";
+  listaF.innerHTML = "";
+
+  views.forEach(n => listaV.innerHTML += `<li>${n.titulo} (${n.visualizacoes} views)</li>`);
+  favoritas.forEach(n => listaF.innerHTML += `<li>${n.titulo}</li>`);
+}
+
+aplicarToggles();
+
+// Ativar todos os extras automaticamente
+(function ativarExtras() {
+  // Google Font
+  const link = document.createElement('link');
+  link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
+  document.body.style.fontFamily = "'Poppins', sans-serif";
+
+  // Animações suaves
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+  `;
+  document.head.appendChild(style);
+})();
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+
+const form = document.getElementById('formulario');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const titulo = document.getElementById('titulo').value;
+  const descricao = document.getElementById('descricao').value;
+  const imagem = document.getElementById('imagem').value;
+  const categoria = document.getElementById('categoria').value;
+  const id = form.getAttribute('data-edit-id') || '_' + Math.random().toString(36).substr(2, 9);
+
+  let noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  // Filtrar demo se existirem outras
+  if (noticias.length > 1) {
+    noticias = noticias.filter(n => n.id !== '_demo');
+  }
+
+  noticias = noticias.filter(n => n.id !== id);
+  noticias.push({ id, titulo, descricao, imagem, categoria, data: new Date().toISOString() });
+
+  localStorage.setItem('noticias', JSON.stringify(noticias));
+  form.reset();
+  form.removeAttribute('data-edit-id');
+  alert("✅ Notícia guardada com sucesso!");
+  
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+});
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+mostrarRanking();
+  
+    const form = document.getElementById('formulario');
+
+    function gerarId() {
+      return '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function editarNoticia(id) {
+      const dados = JSON.parse(localStorage.getItem('noticias')) || [];
+      const noticia = dados.find(n => n.id === id);
+      if (!noticia) return;
+      document.getElementById('titulo').value = noticia.titulo;
+      document.getElementById('descricao').value = noticia.descricao;
+      document.getElementById('imagem').value = noticia.imagem;
+      document.getElementById('categoria').value = noticia.categoria;
+      form.setAttribute('data-edit-id', id);
+      window.scrollTo(0, 0);
+    }
+
+    function apagarNoticia(id) {
+      let dados = JSON.parse(localStorage.getItem('noticias')) || [];
+      dados = dados.filter(n => n.id !== id);
+      localStorage.setItem('noticias', JSON.stringify(dados));
+      
+function toggleMenu() {
+  document.querySelector("nav").classList.toggle("show");
+}
+
+
+
+function guardarToggle(nome) {
+  
+        const input = document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1));
+        if (!input) return;
+        const estado = input.checked;
+        
+  localStorage.setItem('extra_' + nome, estado ? '1' : '0');
+  location.reload(); // aplicar sem complicações
+}
+
+function aplicarToggles() {
+  const extras = ['animacoes', 'googlefont', 'visualizacoes', 'favoritos'];
+  extras.forEach(nome => {
+    const estado = localStorage.getItem('extra_' + nome);
+    if (estado === '1') {
+      document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1)).checked = true;
+    }
+  });
+
+  if (localStorage.getItem('extra_googlefont') === '1') {
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    document.body.style.fontFamily = "'Poppins', sans-serif";
+  }
+
+  if (localStorage.getItem('extra_animacoes') === '1') {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+      @keyframes fadeIn { to { opacity: 1; } }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+aplicarToggles();
+
+function mostrarRanking() {
+  if (!isAdminMode) return;
+  document.getElementById("ranking").style.display = "block";
+
+  const dados = JSON.parse(localStorage.getItem("noticias")) || [];
+  const views = dados.map(n => {
+    const v = parseInt(localStorage.getItem('view_' + n.id) || '0');
+    return { ...n, visualizacoes: v };
+  }).sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
+
+  const favs = JSON.parse(localStorage.getItem("favoritos") || []);
+  const favoritas = dados.filter(n => favs.includes(n.id));
+
+  const listaV = document.querySelector("#maisLidas ul");
+  const listaF = document.querySelector("#maisFavoritas ul");
+  listaV.innerHTML = "";
+  listaF.innerHTML = "";
+
+  views.forEach(n => listaV.innerHTML += `<li>${n.titulo} (${n.visualizacoes} views)</li>`);
+  favoritas.forEach(n => listaF.innerHTML += `<li>${n.titulo}</li>`);
+}
+
+aplicarToggles();
+
+// Ativar todos os extras automaticamente
+(function ativarExtras() {
+  // Google Font
+  const link = document.createElement('link');
+  link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
+  document.body.style.fontFamily = "'Poppins', sans-serif";
+
+  // Animações suaves
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+  `;
+  document.head.appendChild(style);
+})();
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+
+const form = document.getElementById('formulario');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const titulo = document.getElementById('titulo').value;
+  const descricao = document.getElementById('descricao').value;
+  const imagem = document.getElementById('imagem').value;
+  const categoria = document.getElementById('categoria').value;
+  const id = form.getAttribute('data-edit-id') || '_' + Math.random().toString(36).substr(2, 9);
+
+  let noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  // Filtrar demo se existirem outras
+  if (noticias.length > 1) {
+    noticias = noticias.filter(n => n.id !== '_demo');
+  }
+
+  noticias = noticias.filter(n => n.id !== id);
+  noticias.push({ id, titulo, descricao, imagem, categoria, data: new Date().toISOString() });
+
+  localStorage.setItem('noticias', JSON.stringify(noticias));
+  form.reset();
+  form.removeAttribute('data-edit-id');
+  alert("✅ Notícia guardada com sucesso!");
+  
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+});
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+mostrarRanking();
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const titulo = document.getElementById('titulo').value;
+      const descricao = document.getElementById('descricao').value;
+      const imagem = document.getElementById('imagem').value;
+      const categoria = document.getElementById('categoria').value;
+      let id = form.getAttribute('data-edit-id') || gerarId();
+
+      let dados = JSON.parse(localStorage.getItem('noticias')) || [];
+      dados = dados.filter(n => n.id !== id);
+      dados.push({ id, titulo, descricao, imagem, categoria, data: new Date().toISOString() });
+      localStorage.setItem('noticias', JSON.stringify(dados));
+      form.reset();
+      form.removeAttribute('data-edit-id');
+      
+function toggleMenu() {
+  document.querySelector("nav").classList.toggle("show");
+}
+
+
+
+function guardarToggle(nome) {
+  
+        const input = document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1));
+        if (!input) return;
+        const estado = input.checked;
+        
+  localStorage.setItem('extra_' + nome, estado ? '1' : '0');
+  location.reload(); // aplicar sem complicações
+}
+
+function aplicarToggles() {
+  const extras = ['animacoes', 'googlefont', 'visualizacoes', 'favoritos'];
+  extras.forEach(nome => {
+    const estado = localStorage.getItem('extra_' + nome);
+    if (estado === '1') {
+      document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1)).checked = true;
+    }
+  });
+
+  if (localStorage.getItem('extra_googlefont') === '1') {
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    document.body.style.fontFamily = "'Poppins', sans-serif";
+  }
+
+  if (localStorage.getItem('extra_animacoes') === '1') {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+      @keyframes fadeIn { to { opacity: 1; } }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+aplicarToggles();
+
+function mostrarRanking() {
+  if (!isAdminMode) return;
+  document.getElementById("ranking").style.display = "block";
+
+  const dados = JSON.parse(localStorage.getItem("noticias")) || [];
+  const views = dados.map(n => {
+    const v = parseInt(localStorage.getItem('view_' + n.id) || '0');
+    return { ...n, visualizacoes: v };
+  }).sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
+
+  const favs = JSON.parse(localStorage.getItem("favoritos") || []);
+  const favoritas = dados.filter(n => favs.includes(n.id));
+
+  const listaV = document.querySelector("#maisLidas ul");
+  const listaF = document.querySelector("#maisFavoritas ul");
+  listaV.innerHTML = "";
+  listaF.innerHTML = "";
+
+  views.forEach(n => listaV.innerHTML += `<li>${n.titulo} (${n.visualizacoes} views)</li>`);
+  favoritas.forEach(n => listaF.innerHTML += `<li>${n.titulo}</li>`);
+}
+
+aplicarToggles();
+
+// Ativar todos os extras automaticamente
+(function ativarExtras() {
+  // Google Font
+  const link = document.createElement('link');
+  link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
+  document.body.style.fontFamily = "'Poppins', sans-serif";
+
+  // Animações suaves
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+  `;
+  document.head.appendChild(style);
+})();
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+
+const form = document.getElementById('formulario');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const titulo = document.getElementById('titulo').value;
+  const descricao = document.getElementById('descricao').value;
+  const imagem = document.getElementById('imagem').value;
+  const categoria = document.getElementById('categoria').value;
+  const id = form.getAttribute('data-edit-id') || '_' + Math.random().toString(36).substr(2, 9);
+
+  let noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  // Filtrar demo se existirem outras
+  if (noticias.length > 1) {
+    noticias = noticias.filter(n => n.id !== '_demo');
+  }
+
+  noticias = noticias.filter(n => n.id !== id);
+  noticias.push({ id, titulo, descricao, imagem, categoria, data: new Date().toISOString() });
+
+  localStorage.setItem('noticias', JSON.stringify(noticias));
+  form.reset();
+  form.removeAttribute('data-edit-id');
+  alert("✅ Notícia guardada com sucesso!");
+  
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+});
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+mostrarRanking();
+    });
+
+    function carregarNoticias() {
+      const dados = JSON.parse(localStorage.getItem('noticias')) || [];
+      
+    const termo = document.getElementById("pesquisa")?.value?.toLowerCase() || '';
+    const filtradas = dados.filter(n => 
+      (categoriaAtual === 'Todas' || n.categoria === categoriaAtual) &&
+      (n.titulo.toLowerCase().includes(termo) || n.descricao.toLowerCase().includes(termo))
+    );
+    
+      noticiasDiv.innerHTML = '';
+      filtradas.slice(-4).reverse().forEach(n => {
+        const card = document.createElement('div');
+        card.className = 'noticia';
+        const preview = n.descricao.substring(0, 150) + (n.descricao.length > 150 ? '...' : '');
+        card.innerHTML = `
+          <div class="whatsapp-share" onclick="partilharWhatsapp('${n.titulo}', '${n.id}')">
+            <img src="whatsapp-icon.png" alt="WhatsApp">
+          </div>
+          <h3>${n.titulo}</h3>
+          <a href="noticia.html?id=${n.id}">
+            <img src="${n.imagem}" alt="">
+          </a>
+          <div class="noticia-content">
+            <p><small>${new Date(n.data).toLocaleDateString('pt-PT')}</small><br>${preview}</p>
+            ${isAdmin ? `
+              <div style='display:flex; gap:0.5rem; margin-top:0.5rem'>
+                <button onclick="editarNoticia('${n.id}')" style="background:#007bff;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Editar</button>
+                <button onclick="apagarNoticia('${n.id}')" style="background:#dc3545;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Eliminar</button>
+              </div>` : ''}
+          </div>
+        `;
+        noticiasDiv.appendChild(card);
+      });
+    }
+
+    
+function toggleMenu() {
+  document.querySelector("nav").classList.toggle("show");
+}
+
+
+
+function guardarToggle(nome) {
+  
+        const input = document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1));
+        if (!input) return;
+        const estado = input.checked;
+        
+  localStorage.setItem('extra_' + nome, estado ? '1' : '0');
+  location.reload(); // aplicar sem complicações
+}
+
+function aplicarToggles() {
+  const extras = ['animacoes', 'googlefont', 'visualizacoes', 'favoritos'];
+  extras.forEach(nome => {
+    const estado = localStorage.getItem('extra_' + nome);
+    if (estado === '1') {
+      document.getElementById('toggle' + nome.charAt(0).toUpperCase() + nome.slice(1)).checked = true;
+    }
+  });
+
+  if (localStorage.getItem('extra_googlefont') === '1') {
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    document.body.style.fontFamily = "'Poppins', sans-serif";
+  }
+
+  if (localStorage.getItem('extra_animacoes') === '1') {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+      @keyframes fadeIn { to { opacity: 1; } }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+aplicarToggles();
+
+function mostrarRanking() {
+  if (!isAdminMode) return;
+  document.getElementById("ranking").style.display = "block";
+
+  const dados = JSON.parse(localStorage.getItem("noticias")) || [];
+  const views = dados.map(n => {
+    const v = parseInt(localStorage.getItem('view_' + n.id) || '0');
+    return { ...n, visualizacoes: v };
+  }).sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
+
+  const favs = JSON.parse(localStorage.getItem("favoritos") || []);
+  const favoritas = dados.filter(n => favs.includes(n.id));
+
+  const listaV = document.querySelector("#maisLidas ul");
+  const listaF = document.querySelector("#maisFavoritas ul");
+  listaV.innerHTML = "";
+  listaF.innerHTML = "";
+
+  views.forEach(n => listaV.innerHTML += `<li>${n.titulo} (${n.visualizacoes} views)</li>`);
+  favoritas.forEach(n => listaF.innerHTML += `<li>${n.titulo}</li>`);
+}
+
+aplicarToggles();
+
+// Ativar todos os extras automaticamente
+(function ativarExtras() {
+  // Google Font
+  const link = document.createElement('link');
+  link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
+  document.body.style.fontFamily = "'Poppins', sans-serif";
+
+  // Animações suaves
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+  `;
+  document.head.appendChild(style);
+})();
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+
+const form = document.getElementById('formulario');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const titulo = document.getElementById('titulo').value;
+  const descricao = document.getElementById('descricao').value;
+  const imagem = document.getElementById('imagem').value;
+  const categoria = document.getElementById('categoria').value;
+  const id = form.getAttribute('data-edit-id') || '_' + Math.random().toString(36).substr(2, 9);
+
+  let noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  // Filtrar demo se existirem outras
+  if (noticias.length > 1) {
+    noticias = noticias.filter(n => n.id !== '_demo');
+  }
+
+  noticias = noticias.filter(n => n.id !== id);
+  noticias.push({ id, titulo, descricao, imagem, categoria, data: new Date().toISOString() });
+
+  localStorage.setItem('noticias', JSON.stringify(noticias));
+  form.reset();
+  form.removeAttribute('data-edit-id');
+  alert("✅ Notícia guardada com sucesso!");
+  
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+});
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+mostrarRanking();
+  </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(function(reg) {
+      console.log('Service Worker registado com sucesso:', reg.scope);
+    }).catch(function(err) {
+      console.log('Erro ao registar Service Worker:', err);
+    });
+}
+</script>
+</body>
+</html>
+
+<script>
+  window.addEventListener("load", () => {
+    if (typeof carregarNoticias === "function") 
+// Ativar todos os extras automaticamente
+(function ativarExtras() {
+  // Google Font
+  const link = document.createElement('link');
+  link.href = 'https://fonts.googleapis.com/css2?family=Poppins&display=swap';
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
+  document.body.style.fontFamily = "'Poppins', sans-serif";
+
+  // Animações suaves
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .noticia, .noticia-content { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+  `;
+  document.head.appendChild(style);
+})();
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+
+const form = document.getElementById('formulario');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const titulo = document.getElementById('titulo').value;
+  const descricao = document.getElementById('descricao').value;
+  const imagem = document.getElementById('imagem').value;
+  const categoria = document.getElementById('categoria').value;
+  const id = form.getAttribute('data-edit-id') || '_' + Math.random().toString(36).substr(2, 9);
+
+  let noticias = JSON.parse(localStorage.getItem('noticias')) || [];
+
+  // Filtrar demo se existirem outras
+  if (noticias.length > 1) {
+    noticias = noticias.filter(n => n.id !== '_demo');
+  }
+
+  noticias = noticias.filter(n => n.id !== id);
+  noticias.push({ id, titulo, descricao, imagem, categoria, data: new Date().toISOString() });
+
+  localStorage.setItem('noticias', JSON.stringify(noticias));
+  form.reset();
+  form.removeAttribute('data-edit-id');
+  alert("✅ Notícia guardada com sucesso!");
+  
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+});
+
+
+
+if (!isAdminMode && (!localStorage.getItem('noticias') || JSON.parse(localStorage.getItem('noticias')).length === 0)) {
+  const demoNoticia = [{
+    id: "_demo",
+    titulo: "Exemplo de Curso para Assessores",
+    descricao: "Esta é uma notícia de demonstração. Só aparece se não houver nenhuma criada.",
+    imagem: "https://via.placeholder.com/600x300?text=Curso+Demo",
+    categoria: "Marketing",
+    data: new Date().toISOString()
+  }];
+  localStorage.setItem('noticias', JSON.stringify(demoNoticia));
+}
+
+}
+
+carregarNoticias();
+  });
+</script>
