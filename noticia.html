@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notícia</title>
+</head>
+<body>
+  <h1 id="titulo"></h1>
+  <h3 id="preview"></h3>
+  <img id="imagem" style="max-width:100%;margin-top:1rem;" />
+  <p id="descricao"></p>
+  <p id="data"></p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    fetch("noticias.json")
+      .then(res => res.json())
+      .then(noticias => {
+        const n = noticias.find(n => n.id === id);
+        if (n) {
+          document.getElementById("titulo").innerText = n.titulo;
+          document.getElementById("preview").innerText = n.preview;
+          document.getElementById("imagem").src = n.imagem;
+          document.getElementById("descricao").innerText = n.descricao;
+          document.getElementById("data").innerText = new Date(n.data).toLocaleDateString("pt-PT");
+        }
+      });
+  </script>
+</body>
+</html>
