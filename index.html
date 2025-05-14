@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mural X Style</title>
+  <style>
+    :root {
+      --bg: #fff;
+      --text: #000;
+      --card: #f9f9f9;
+    }
+    [data-theme="dark"] {
+      --bg: #000;
+      --text: #fff;
+      --card: #111;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: #000;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      padding-top: 0.5rem;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .dark-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+    .dark-toggle input {
+      display: none;
+    }
+    .slider {
+      width: 40px;
+      height: 20px;
+      background: #ccc;
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+    }
+    .slider::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: 0.3s;
+    }
+    input:checked + .slider::before {
+      transform: translateX(20px);
+    }
+
+    .admin {
+      max-width: 600px;
+      margin: 1rem auto;
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      margin: 0.4rem 0;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #888;
+    }
+    button {
+      background: #000;
+      color: white;
+      font-weight: bold;
+    }
+    .feed {
+      max-width: 600px;
+      margin: auto;
+      padding: 1rem;
+    }
+    .post {
+      background: var(--card);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .post img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+    }
+    .post .meta {
+      font-size: 0.8rem;
+      color: gray;
+      margin-bottom: 0.3rem;
+    }
+    .whatsapp {
+      width: 28px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+<div class="dark-toggle">
+  <label>
+    <input type="checkbox" onchange="toggleTheme(this)">
+    <span class="slider"></span>
+  </label>
+</div>
+
+<header>
+  <h1>Mural de Notícias</h1>
+  <nav>
+    <a href="#">Marketing</a>
+    <a href="#">Audiovisuais</a>
+    <a href="#">Videojogos</a>
+  </nav>
+</header>
+
+<section class="admin" id="admin">
+  <h2>Nova Notícia</h2>
+  <input type="text" id="titulo" placeholder="Título">
+  <input type="text" id="preview" placeholder="Subtítulo / Preview">
+  <select id="imagem">
+    <option value="">Seleciona imagem da pasta /fotos</option>
+    <option value="fotos/imagem1.jpg">imagem1.jpg</option>
+    <option value="fotos/imagem2.jpg">imagem2.jpg</option>
+    <option value="fotos/imagem3.jpg">imagem3.jpg</option>
+  </select>
+  <select id="categoria">
+    <option>Marketing</option>
+    <option>Audiovisuais</option>
+    <option>Videojogos</option>
+  </select>
+  <textarea id="descricao" rows="4" placeholder="Texto completo da notícia"></textarea>
+  <button onclick="guardarNoticia()">Guardar Notícia</button>
+</section>
+
+<section class="feed" id="noticiasContainer"></section>
+
+<script>
+let noticias = [];
+
+function toggleTheme(input) {
+  document.body.setAttribute("data-theme", input.checked ? "dark" : "light");
+}
+
+function guardarNoticia() {
+  const noticia = {
+    id: "_" + Math.random().toString(36).substr(2, 9),
+    titulo: document.getElementById("titulo").value,
+    preview: document.getElementById("preview").value,
+    imagem: document.getElementById("imagem").value,
+    categoria: document.getElementById("categoria").value,
+    descricao: document.getElementById("descricao").value,
+    data: new Date().toISOString()
+  };
+  noticias.push(noticia);
+  localStorage.setItem("noticias", JSON.stringify(noticias));
+  renderNoticias();
+}
+
+function renderNoticias() {
+  const container = document.getElementById("noticiasContainer");
+  container.innerHTML = "";
+  noticias.slice().reverse().forEach(n => {
+    container.innerHTML += `
+      <div class="post">
+        <div class="meta">${new Date(n.data).toLocaleDateString("pt-PT")} | ${n.categoria}</div>
+        <h3>${n.titulo}</h3>
+        <p><em>${n.preview}</em></p>
+        ${n.imagem ? `<img src="${n.imagem}" alt="Imagem">` : ""}
+        <p>${n.descricao}</p>
+        <div>
+          <a href="https://wa.me/?text=${encodeURIComponent(n.titulo + '\n' + n.preview)}" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="whatsapp" alt="WhatsApp">
+          </a>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function carregarNoticias() {
+  const data = localStorage.getItem("noticias");
+  noticias = data ? JSON.parse(data) : [];
+  renderNoticias();
+}
+
+carregarNoticias();
+</script>
+</body>
+</html>
