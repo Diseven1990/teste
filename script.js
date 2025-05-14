@@ -61,12 +61,12 @@ function mostrarNoticias() {
   });
 }
 
-function criarCard(noticia, index) {
+function criarCard(noticia, index, link = false) {
   const div = document.createElement("div");
   div.className = "card";
   div.innerHTML = `
     <img src="${noticia.imagem}" alt="Imagem da notícia">
-    <h3>${noticia.titulo}</h3>
+    <h3>${link ? `<a href='noticia.html?id=${index}'>${noticia.titulo}</a>` : noticia.titulo}</h3>
     <h4>${noticia.subtitulo}</h4>
     <p>${noticia.corpo.substring(0, 100)}...</p>
     <small>${noticia.data} | ${noticia.categoria}</small>

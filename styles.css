@@ -97,3 +97,33 @@ h2 {
 #form-noticia button:hover {
   background: #444;
 }
+
+.noticia-completa {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+  background: #fff;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.btn-voltar {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.whatsapp {
+  display: inline-block;
+  font-size: 0.9rem;
+  background: #25d366;
+  color: white;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  text-decoration: none;
+}

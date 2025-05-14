@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notícia</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="noticia-completa">
+    <button onclick="history.back()" class="btn-voltar">Voltar atrás</button>
+    <div id="conteudo-noticia"></div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get("id"));
+    const noticias = JSON.parse(localStorage.getItem("noticias")) || [];
+    const noticia = noticias[id];
+
+    const div = document.getElementById("conteudo-noticia");
+    if (noticia) {
+      div.innerHTML = `
+        <h1>${noticia.titulo}</h1>
+        <h2>${noticia.subtitulo}</h2>
+        <img src="${noticia.imagem}" alt="Imagem da notícia">
+        <p>${noticia.corpo}</p>
+        <small>${noticia.data} | ${noticia.categoria}</small><br><br>
+        <a class="whatsapp" href="https://wa.me/?text=${encodeURIComponent(document.location.href)}" target="_blank">📲 Partilhar no WhatsApp</a>
+      `;
+    } else {
+      div.innerHTML = "<p>Notícia não encontrada.</p>";
+    }
+  </script>
+</body>
+</html>
