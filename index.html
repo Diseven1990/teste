@@ -70,16 +70,14 @@
     z-index: 3;
     border-bottom-left-radius: 24px;
     border-bottom-right-radius: 24px;
-  }
-  .hover-info p {
-    margin: 0;
-  }
-  .bio-uma-linha {
-    text-align: center;
-  }
-  .bio-varias-linhas {
-    text-align: justify;
-  }
+}
+ .hover-info {
+  max-height: 120px; /* ou o valor que preferires */
+  overflow-y: auto;
+}
+ .hover-info p {
+  text-align: justify;
+}
   .card:hover .hover-info { bottom: 0; }
 </style>
 </head>
