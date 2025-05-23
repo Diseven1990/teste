@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang='pt-pt'>
+<head>
+  <meta charset='UTF-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+  <title>Patrocinadores</title>
+  <link href='https://fonts.googleapis.com/css2?family=Open+Sans&display=swap' rel='stylesheet'>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      height: 100%;
+      font-family: 'Open Sans', sans-serif;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel-container {
+      width: 716px;
+      height: 407px;
+      overflow: hidden;
+      position: relative;
+      background: transparent;
+    }
+    .slide {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+    }
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      width: 100%;
+      padding: 20px 15px 15px;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .slide:hover .info {
+      opacity: 1;
+    }
+    .info strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2rem;
+      color: black;
+      background: rgba(255,255,255,0.6);
+      border: none;
+      cursor: pointer;
+      z-index: 1;
+      padding: 5px 10px;
+    }
+    .arrow.left { left: 0; }
+    .arrow.right { right: 0; }
+
+    @media (max-width: 768px) {
+      .carousel-container {
+        width: 90vw;
+        height: calc(90vw * 0.57); /* mantém proporção aproximada */
+      }
+      .info {
+        font-size: 0.8rem;
+        padding: 16px 10px 10px;
+      }
+      .arrow {
+        font-size: 1.5rem;
+        padding: 4px 8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .info strong {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class='carousel-container' id='carousel-wrapper'>
+  <button class='arrow left' onclick='plusSlides(-1)'>&#10094;</button>
+  <div class='slide' style='display: block;'>
+    <img src='1881.png' alt='Somos uma agência de comunicação 360º. Analisamos, conceitualizamos, criamos, escrevemos, desenhamos e implementamos projetos que contribuem para o sucesso dos nossos clientes.'>
+    <div class='info'><strong>Somos uma agência de comunicação 360º. Analisamos, conceitualizamos, criamos, escrevemos, desenhamos e implementamos projetos que contribuem para o sucesso dos nossos clientes.</strong></div>
+  </div>
+  <div class='slide'>
+    <img src='adsumus.png' alt='Fundada em 2014 por mulheres afrodescentes e imigrantes, a sua intervenção tem enfoque em tudo quanto respeite a valorização e igualdade de oportunidades, que fomente o estreitamento das relações entre a comunidade migrante e a sociedade de acolhimento, a participação cívica, bem como prevenção de situações de risco de pobreza e exclusão social e a melhoria das condições de vida.'>
+    <div class='info'><strong>Fundada em 2014 por mulheres afrodescentes e imigrantes, a sua intervenção tem enfoque em tudo quanto respeite a valorização e igualdade de oportunidades, que fomente o estreitamento das relações entre a comunidade migrante e a sociedade de acolhimento, a participação cívica, bem como prevenção de situações de risco de pobreza e exclusão social e a melhoria das condições de vida.</strong></div>
+  </div>
+  <div class='slide'>
+    <img src='bet.png' alt='A Between Percentages é uma empresa sólida, com sólida experiência, capaz de impulsionar sabiamente o crescimento do seu portfólio.'>
+    <div class='info'><strong>A Between Percentages é uma empresa sólida, com sólida experiência, capaz de impulsionar sabiamente o crescimento do seu portfólio.</strong></div>
+  </div>
+  <div class='slide'>
+    <img src='colibri.png' alt='TKCOLIBRI, é uma agência especializada em comunicação e marketing digital. A nossa proposta passa por uma metodologia própria baseada na centralidade dos nossos clientes. A base da empresa é a criatividade que colocamos ao serviço de quem nos procura.'>
+    <div class='info'><strong>TKCOLIBRI, é uma agência especializada em comunicação e marketing digital. A nossa proposta passa por uma metodologia própria baseada na centralidade dos nossos clientes. A base da empresa é a criatividade que colocamos ao serviço de quem nos procura.</strong></div>
+  </div>
+  <div class='slide'>
+    <img src='data.jpg' alt='A Datadebug é uma empresa especializada nas diferentes áreas das tecnologias de informação, dando assistência nos mais diversos sectores de actividade. Disponibilizamos as soluções necessárias de modo a tornar eficaz a capacidade de negócio dos nossos clientes em qualquer parte do mundo.'>
+    <div class='info'><strong>A Datadebug é uma empresa especializada nas diferentes áreas das tecnologias de informação, dando assistência nos mais diversos sectores de actividade. Disponibilizamos as soluções necessárias de modo a tornar eficaz a capacidade de negócio dos nossos clientes em qualquer parte do mundo.</strong></div>
+  </div>
+  <div class='slide'>
+    <img src='dobro.png' alt='Seguimos um processo de construção passo a passo, trabalhando com nossos clientes em um workshop de marca para definir como comunicar sua marca.'>
+    <div class='info'><strong>Seguimos um processo de construção passo a passo, trabalhando com nossos clientes em um workshop de marca para definir como comunicar sua marca.</strong></div>
+  </div>
+  <button class='arrow right' onclick='plusSlides(1)'>&#10095;</button>
+</div>
+<script>
+  let slideIndex = 0;
+  let slides = document.getElementsByClassName('slide');
+  let wrapper = document.getElementById('carousel-wrapper');
+  let timer = null;
+  function showSlide(n) {
+    slideIndex = (n + slides.length) % slides.length;
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].style.display = 'none';
+    }
+    slides[slideIndex].style.display = 'block';
+  }
+  function plusSlides(n) {
+    pause();
+    showSlide(slideIndex + n);
+    play();
+  }
+  function pause() {
+    if (timer) clearInterval(timer);
+    timer = null;
+  }
+  function play() {
+    if (!timer) {
+      timer = setInterval(() => showSlide(slideIndex + 1), 3000);
+    }
+  }
+  wrapper.addEventListener('mouseover', pause);
+  wrapper.addEventListener('mouseout', play);
+  play();
+</script>
+</body>
+</html>
